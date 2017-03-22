@@ -1,0 +1,15 @@
+/.bundle/
+/.yardoc
+/Gemfile.lock
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+.DS_Store
+nora_client_secret.json
+nora_configuration.json
+past_pairings.txt
+calendar-ruby-quickstart.yaml
+*.gem

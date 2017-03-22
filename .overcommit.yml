@@ -1,0 +1,57 @@
+verify_signatures: false
+CommitMsg:
+  CapitalizedSubject:
+    enabled: true
+  HardTabs:
+    enabled: true
+  RussianNovel:
+    enabled: true
+  SingleLineSubject:
+    enabled: true
+  TextWidth:
+    enabled: true
+  TrailingPeriod:
+    enabled: true
+PreCommit:
+  ALL:
+    problem_on_unmodified_line: "warn"
+  AuthorEmail:
+    enabled: true
+  AuthorName:
+    enabled: true
+  Brakeman: # Performs static code security checking.
+    enabled: true
+  BrokenSymlinks:
+    enabled: true
+  BundleCheck:
+    enabled: false
+  CssLint:
+    enabled: true
+  HamlLint:
+    enabled: true
+  HardTabs:
+    enabled: true
+  HtmlTidy: # Uses the `tidy` executable (installed on OS X by default).
+    enabled: true
+  JsonSyntax:
+    enabled: true
+  LocalPathsInGemfile:
+    enabled: false
+  MergeConflicts:
+    enabled: true
+  PryBinding:
+    enabled: true
+  Reek:
+    enabled: false
+  RuboCop:
+    enabled: true
+    problem_on_unmodified_line: warn
+  ScssLint:
+    enabled: true
+  TrailingWhitespace:
+    enabled: true
+  TravisLint: # Checks Travis CI configurations. We use Travis for our open-
+              # source repositories.
+    enabled: true
+  YamlSyntax:
+    enabled: true

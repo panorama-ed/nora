@@ -1,0 +1,50 @@
+#! /usr/bin/env ruby
+
+require "optparse"
+
+require_relative "../lib/nora.rb"
+
+# @return [Hash] A hash of command line options:
+#   :weeks_ahead => How many weeks ahead to schedule
+#   :test => True iff we're testing the script (default: false)
+def parsed_options
+  options = {}
+
+  parser = OptionParser.new do |opts|
+    opts.banner = "Usage: nora --weeks-ahead <weeks>"
+
+    opts.on(
+      "--weeks-ahead <weeks>",
+      "(required) How many weeks ahead to schedule"
+    ) do |weeks|
+      options[:weeks_ahead] = weeks.to_i
+    end
+
+    # Default to not using test mode
+    options[:test] = false
+
+    opts.on(
+      "--test",
+      "Testing mode. Does not actually schedule anything or send any emails."
+    ) do |test|
+      options[:test] = test
+    end
+
+    opts.on_tail("-h", "--help", "Show this message") do
+      puts opts
+      exit
+    end
+  end
+
+  parser.parse!
+
+  if !options[:weeks_ahead] || options[:weeks_ahead] < 1
+    puts "Missing argument: weeks-ahead"
+    puts parser
+    exit
+  end
+
+  options
+end
+
+Nora::Core.new(parsed_options).run!
