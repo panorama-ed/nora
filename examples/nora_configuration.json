@@ -1,0 +1,48 @@
+{
+  "people": [
+    { "email": "btables@example.com", "name": "Bobby Tables" },
+    { "email": "ghopper@example.com", "name": "Grace Hopper" },
+    { "email": "ecstanton@example.com", "name": "Elizabeth Cady Stanton" }
+  ],
+  "icebreakers": [
+    "What superpower would you most like to have?",
+    "What's your favorite place on Earth?",
+    "What's something you like to do in your free time?"
+  ],
+  "group_size": 2,
+  "email": {
+    "from_address": "nora@<yourdomain>.com",
+    "templates": {
+      "default": "Agent—\n\nYour fellow agents are behind enemy lines, battling time commitments daily.\nAs chance would have it, I've secured a meeting between Agents NAMES on DAY at MILITARY_TIME hours.\n\nBeware of infiltrators posing as other agents. To confirm your identities,\nthe passcode for the meeting will be your answer to the following icebreaker question: ICEBREAKER\n\nUpon completion of the mission, I will be contacting you for intel.\n\nGood luck, agent.\n\nnora",
+      "no_time": "Agent—\n\nYour fellow agents are behind enemy lines, battling time commitments daily.\nI was unable to secure a meeting time between Agents NAMES for WEEKS_AHEAD from now,\nso you'll have to get creative and arrange a meeting on your own.\n\nBeware of infiltrators posing as other agents. To confirm your identities,\nthe passcode for the meeting will be your answer to the following icebreaker question: ICEBREAKER\n\nUpon completion of the mission, I will be contacting you for intel.\n\nGood luck, agent.\n\nnora",
+      "no_group": "Agent—\n\nYou've been working hard behind enemy lines.\n\nIn fact, erm, well, this is a bit awkward but... you've plowed on\nthrough our backlog of missions and we don't have anything for you to\ndo WEEKS_AHEAD from now.\n\nEnjoy the time off, and know that it won't last; we'll find a new mission for you soon.\n\nnora"
+    },
+    "domain": "heroku.com",
+    "sendgrid_configuration": {
+      "user_name": "<an easy way to obtain this is via Heroku>",
+      "password": "<an easy way to obtain this is via Heroku>"
+    }
+  },
+  "calendar": {
+    "id": "nora@<yourdomain>.com",
+    "user_id": "NORA",
+    "application_name": "NORA",
+    "days_of_week": ["Monday", "Tuesday", "Wednesday"],
+    "duration_in_minutes": 30,
+    "start_times": [
+      "14:30",
+      "15:00",
+      "15:30",
+      "16:00",
+      "16:30",
+      "17:00",
+      "17:30",
+      "18:00",
+      "18:30",
+      "19:00",
+      "19:30",
+      "20:00",
+      "20:30"
+    ]
+  }
+}
