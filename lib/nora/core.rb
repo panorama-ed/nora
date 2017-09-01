@@ -179,6 +179,7 @@ module Nora
             num_weeks = @weeks_ahead + 1
             CONFIGURATION["email"]["templates"]["no_time"].
               gsub("NAMES", names).
+              gsub("ICEBREAKER", icebreaker).
               gsub("WEEKS_AHEAD", "#{num_weeks} #{'week'.pluralize(num_weeks)}")
           when :no_group
             num_weeks = @weeks_ahead + 1
