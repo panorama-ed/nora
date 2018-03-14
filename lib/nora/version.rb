@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Nora
-  VERSION = "0.2".freeze
+  VERSION = "0.3"
 end
