@@ -30,6 +30,11 @@ def parsed_options
       options[:test] = test
     end
 
+    opts.on("--version", "Print the version and exit") do
+      puts Nora::VERSION
+      exit
+    end
+
     opts.on_tail("-h", "--help", "Show this message") do
       puts opts
       exit

@@ -1,4 +1,5 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "nora/version"
@@ -23,10 +24,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "overcommit", "~> 0.38"
-  spec.add_development_dependency "rubocop", "~> 0.47"
+  spec.add_development_dependency "rubocop", "~> 0.49"
 
-  spec.add_dependency "pony", "~> 1.11"
   spec.add_dependency "activesupport", "~> 5.0"
   spec.add_dependency "chronic", "~> 0.10"
   spec.add_dependency "google-api-client", "~> 0.10"
+  spec.add_dependency "pony", "~> 1.12"
 end

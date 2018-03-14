@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "google/apis/calendar_v3"
 require "googleauth"
 require "googleauth/stores/file_token_store"
@@ -15,12 +17,12 @@ module Nora
   class Core
     extend Memoist
 
-    PAIRINGS_FILE = "past_pairings.txt".freeze
-    PAIRINGS_FILE_SEPARATOR = " ".freeze
+    PAIRINGS_FILE = "past_pairings.txt"
+    PAIRINGS_FILE_SEPARATOR = " "
 
-    OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
-    CLIENT_SECRETS_PATH = "nora_client_secret.json".freeze
-    CREDENTIALS_PATH = "calendar-ruby-quickstart.yaml".freeze
+    OOB_URI = "urn:ietf:wg:oauth:2.0:oob"
+    CLIENT_SECRETS_PATH = "nora_client_secret.json"
+    CREDENTIALS_PATH = "calendar-ruby-quickstart.yaml"
     SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR
 
     FREE_BUSY_QUERY_BATCH_SIZE = 5
@@ -39,7 +41,7 @@ module Nora
         # These Sendgrid credentials come from the Heroku addon.
         user_name:
           CONFIGURATION["email"]["sendgrid_configuration"]["user_name"],
-        password: CONFIGURATION["email"]["sendgrid_configuration"]["password"],
+        password: CONFIGURATION["email"]["sendgrid_configuration"]["password"]
       }
     }
 
@@ -172,7 +174,7 @@ module Nora
       appointments.map do |appt|
         names = appt[:who].map { |w| w[:name] }.join(" and ")
 
-        # rubocop:disable Style/MultilineMethodCallIndentation
+        # rubocop:disable Layout/MultilineMethodCallIndentation
         message =
           case appt[:on]
           when :no_time
@@ -196,7 +198,7 @@ module Nora
               gsub("MILITARY_TIME", military_time).
               gsub("ICEBREAKER", icebreaker)
           end
-        # rubocop:enable Style/MultilineMethodCallIndentation
+        # rubocop:enable Layout/MultilineMethodCallIndentation
 
         {
           to: appt[:who],
@@ -361,7 +363,7 @@ module Nora
                     get_credentials(CONFIGURATION["calendar"]["user_id"])
       if credentials.nil?
         url = authorizer.get_authorization_url(base_url: OOB_URI)
-        puts "Open the following URL in the browser and enter the " +
+        puts "Open the following URL in the browser and enter the "\
              "resulting code after authorization"
         puts url
         code = gets
