@@ -67,6 +67,8 @@ module Nora
     def run!
       begin
         load_history!
+        puts "Loading calendars..."
+        load_calendars!
         puts "Creating groups..."
         create_groups!
       rescue SystemStackError
@@ -85,6 +87,18 @@ module Nora
     end
 
     private
+
+    # Adds all calendars to NORA's calendar, so that
+    # `@service.list_calendar_lists` will have every
+    # calendar in the configuration file without us
+    # having to manually add them in the UI.
+    def load_calendars!
+      @emails.each do |email|
+        @service.insert_calendar_list(
+          Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
+        )
+      end
+    end
 
     def remove_oldest_pair!
       puts "Removing oldest pair and retrying..."

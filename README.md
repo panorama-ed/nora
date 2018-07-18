@@ -26,11 +26,6 @@ the username and password that are set automatically in config variables.
 which you intend to run the `nora` program. Edit the file to include the names
 and email addresses you want, your SendGrid credentials, and any other changes
 you like.
-5. While logged in to Google Calendar (as the user you intend to run NORA as,
-which is most likely yourself), use the "Add a friend's/coworker's calendar"
-box to add the calendars for everyone you added to your
-`nora_configuration.json` file. *Note that this step may not be necessary but
-not doing it can occasionally cause people to get skipped when scheduling.*
 
 ## Usage
 
@@ -55,8 +50,7 @@ together often.
 #### Adding/Removing People
 
 To add someone for future scheduling, simply add their name and email address
-to `nora_configuration.json`, and add them to your Google Calendar as you did in
-installation step 5.
+to `nora_configuration.json`.
 
 To remove someone, just remove them from `nora_configuration.json`.
 
@@ -65,8 +59,7 @@ To remove someone, just remove them from `nora_configuration.json`.
 #### NORA isn't scheduling someone!
 
 Make sure that they're in the `nora_configuration.json` file with the correct
-email address, and that you've also added their email to the Google Calendar of
-the user running NORA (see installation step 5).
+email address.
 
 #### NORA is scheduling events at the same time as full-day events!
 
