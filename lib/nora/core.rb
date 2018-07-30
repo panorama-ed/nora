@@ -93,8 +93,10 @@ module Nora
     # calendar in the configuration file without us
     # having to manually add them in the UI.
     def load_calendars!
+      puts "Loading calendars"
       @emails = CONFIGURATION["people"].map { |p| p["email"] }.shuffle
       @emails.each do |email|
+        puts "Loading calendar: #{email}"
         @service.insert_calendar_list(
           Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
         )
