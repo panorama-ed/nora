@@ -65,15 +65,13 @@ module Nora
     end
 
     def run!
+      load_history! # Populate @history for load_calendars!
+      load_calendars! # Outside the loop to reduce calls to Google API.
       begin
-        load_history!
-        puts "Loading calendars..."
-        load_calendars!
-        puts "Creating groups..."
+        shuffle_emails!
         create_groups!
       rescue SystemStackError
         remove_oldest_pair!
-
         retry
       end
 
@@ -93,14 +91,19 @@ module Nora
     # calendar in the configuration file without us
     # having to manually add them in the UI.
     def load_calendars!
-      puts "Loading calendars"
-      @emails = CONFIGURATION["people"].map { |p| p["email"] }.shuffle
-      @emails.each do |email|
+      puts "Loading calendars..."
+      @emails = CONFIGURATION["people"].map { |p| p["email"] }
+      (Set.new(@emails) - @history).each do |email|
         puts "Loading calendar: #{email}"
         @service.insert_calendar_list(
           Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
         )
       end
+    end
+
+    def shuffle_emails!
+      puts "Shuffling emails..."
+      @emails = @emails.shuffle
     end
 
     def remove_oldest_pair!
@@ -124,6 +127,7 @@ module Nora
     end
 
     def create_groups!
+      puts "Creating groups..."
       @emails.each_slice(group_size).each do |emails|
         return create_groups! unless (@history & emails.combination(2)).empty?
       end
