@@ -46,8 +46,6 @@ module Nora
     }
 
     def initialize(weeks_ahead:, test:)
-      puts
-
       @weeks_ahead = weeks_ahead
       @test = test
 
@@ -93,7 +91,16 @@ module Nora
     def load_calendars!
       puts "Loading calendars..."
       @emails = CONFIGURATION["people"].map { |p| p["email"] }
-      (Set.new(@emails) - @history).each do |email|
+
+      emails_in_history = []
+      File.open(PAIRINGS_FILE).each do |line|
+        line.split(PAIRINGS_FILE_SEPARATOR).each do |email|
+          emails_in_history << email
+        end
+      end
+
+      # Load all calendars that aren't in our history.
+      (@emails - emails_in_history).each do |email|
         puts "Loading calendar: #{email}"
         @service.insert_calendar_list(
           Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
