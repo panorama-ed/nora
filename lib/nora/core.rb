@@ -105,6 +105,7 @@ module Nora
         @service.insert_calendar_list(
           Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
         )
+        sleep 1 # Avoid exceeding Google's rate limit.
       end
     end
 
@@ -281,6 +282,7 @@ module Nora
           guests_can_modify: true
         )
       )
+      sleep 1 # Avoid exceeding Google's rate limit.
     end
 
     def availability_schedule
