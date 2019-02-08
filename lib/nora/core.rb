@@ -25,6 +25,7 @@ module Nora
     CREDENTIALS_PATH = "calendar-ruby-quickstart.yaml"
     SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR
 
+    CALENDAR_BATCH_SIZE = 250 # The maximum Google Calendar allows
     FREE_BUSY_QUERY_BATCH_SIZE = 5
 
     CONFIGURATION = JSON.parse(File.read("nora_configuration.json"))
@@ -65,13 +66,7 @@ module Nora
     def run!
       load_history! # Populate @history for load_calendars!
       load_calendars! # Outside the loop to reduce calls to Google API.
-      begin
-        shuffle_emails!
-        create_groups!
-      rescue SystemStackError
-        remove_oldest_pair!
-        retry
-      end
+      create_groups!
 
       send_emails(
         template_emails_for(
@@ -92,15 +87,8 @@ module Nora
       puts "Loading calendars..."
       @emails = CONFIGURATION["people"].map { |p| p["email"] }
 
-      emails_in_history = []
-      File.open(PAIRINGS_FILE).each do |line|
-        line.split(PAIRINGS_FILE_SEPARATOR).each do |email|
-          emails_in_history << email
-        end
-      end
-
       # Load all calendars that aren't in our history.
-      (@emails - emails_in_history).each do |email|
+      (Set.new(@emails) - @previously_loaded_emails).each do |email|
         puts "Loading calendar: #{email}"
         @service.insert_calendar_list(
           Google::Apis::CalendarV3::CalendarListEntry.new(id: email)
@@ -109,35 +97,39 @@ module Nora
       end
     end
 
-    def shuffle_emails!
-      puts "Shuffling emails..."
-      @emails = @emails.shuffle
-    end
-
-    def remove_oldest_pair!
-      puts "Removing oldest pair and retrying..."
-      File.open("past_pairings_tmp.txt", "w") do |file|
-        File.open(PAIRINGS_FILE).each.with_index(1) do |line, line_num|
-          file.puts(line) unless line_num == 1
-        end
-      end
-      FileUtils.mv("past_pairings_tmp.txt", PAIRINGS_FILE)
-    end
-
     def load_history!
       puts "Loading history..."
-      @history = Set.new
+      @past_pairing_counts = Hash.new { |h, k| h[k] = 0 }
+      @previously_loaded_emails = Set.new
       File.open(PAIRINGS_FILE).each do |line|
-        line.split(PAIRINGS_FILE_SEPARATOR).permutation.each do |emails|
-          @history << emails
+        line.split(PAIRINGS_FILE_SEPARATOR).each do |email|
+          @previously_loaded_emails << email
+        end.permutation.each do |emails|
+          @past_pairing_counts[group_key(emails: emails)] += 1
         end
       end
+    end
+
+    def group_key(emails:)
+      emails.sort.join(",")
     end
 
     def create_groups!
       puts "Creating groups..."
-      @emails.each_slice(group_size).each do |emails|
-        return create_groups! unless (@history & emails.combination(2)).empty?
+      unmatched_emails = Set.new(@emails)
+      @groups = []
+
+      while unmatched_emails.size >= group_size
+        @emails.shuffle.combination(group_size).each do |emails|
+          next unless emails.all? { |email| unmatched_emails.include?(email) }
+          key = group_key(emails: emails)
+          if @past_pairing_counts[key].zero?
+            @groups << emails
+            unmatched_emails.subtract(emails)
+          else
+            @past_pairing_counts[key] -= 1
+          end
+        end
       end
     end
 
@@ -148,7 +140,7 @@ module Nora
 
       meetings = []
 
-      @emails.each_slice(group_size) do |emails|
+      @groups.each do |emails|
         if emails.size < group_size
           puts "\nNot enough people in group: #{emails}\n"
           meetings << {
@@ -159,6 +151,14 @@ module Nora
             end
           }
           next
+        end
+
+        unless @test
+          File.open(PAIRINGS_FILE, "a") do |file|
+            emails.combination(2) do |email_pair|
+              file.puts email_pair.join(PAIRINGS_FILE_SEPARATOR)
+            end
+          end
         end
 
         time = availability_schedule.select do |_, ids|
@@ -177,14 +177,6 @@ module Nora
         else
           puts "#{time} => #{emails}"
           add_meeting(time: time, attendee_ids: emails)
-
-          unless @test
-            File.open(PAIRINGS_FILE, "a") do |file|
-              emails.combination(2) do |email_pair|
-                file.puts email_pair.join(PAIRINGS_FILE_SEPARATOR)
-              end
-            end
-          end
 
           meetings << {
             on: time,
@@ -342,9 +334,22 @@ module Nora
     memoize :email_name_map
 
     def calendars
-      @service.list_calendar_lists.items.select do |calendar|
-        @emails.include? calendar.id
+      output = []
+      lists = @service.list_calendar_lists(max_results: CALENDAR_BATCH_SIZE)
+      lists.items.each do |calendar|
+        output << calendar if @emails.include? calendar.id
       end
+
+      while lists.next_page_token
+        lists = @service.list_calendar_lists(
+          max_results: CALENDAR_BATCH_SIZE,
+          page_token: lists.next_page_token
+        )
+        lists.items.each do |calendar|
+          output << calendar if @emails.include? calendar.id
+        end
+      end
+      output
     end
     memoize :calendars
 
