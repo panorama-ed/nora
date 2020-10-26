@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "overcommit", "~> 0.38"
-  spec.add_development_dependency "rubocop", "~> 0.49"
+  spec.add_development_dependency "rubocop", "~> 1.0"
 
   spec.add_dependency "activesupport", ">= 5", "< 7"
   spec.add_dependency "chronic", "~> 0.10"
