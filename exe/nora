@@ -1,8 +1,9 @@
 #! /usr/bin/env ruby
+# frozen_string_literal: true
 
 require "optparse"
 
-require_relative "../lib/nora.rb"
+require_relative "../lib/nora"
 
 # @return [Hash] A hash of command line options:
 #   :weeks_ahead => How many weeks ahead to schedule

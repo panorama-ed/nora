@@ -12,10 +12,11 @@ require "active_support/core_ext/numeric/time"
 require "active_support/duration"
 require "chronic"
 require "pony"
+require "memo_wise"
 
 module Nora
   class Core
-    extend Memoist
+    prepend MemoWise
 
     PAIRINGS_FILE = "past_pairings.txt"
     PAIRINGS_FILE_SEPARATOR = " "
@@ -122,6 +123,7 @@ module Nora
       while unmatched_emails.size >= group_size
         @emails.shuffle.combination(group_size).each do |emails|
           next unless emails.all? { |email| unmatched_emails.include?(email) }
+
           key = group_key(emails: emails)
           if @past_pairing_counts[key].zero?
             @groups << emails
@@ -235,18 +237,16 @@ module Nora
 
       email_messages.each do |msg|
         msg[:to].each do |to|
-          begin
-            Pony.mail(
-              to: to[:email],
-              from: CONFIGURATION["email"]["from_address"],
-              subject: msg[:subject],
-              body: msg[:body],
-              via: :smtp,
-              charset: "UTF-8"
-            )
-          rescue => e
-            puts e
-          end
+          Pony.mail(
+            to: to[:email],
+            from: CONFIGURATION["email"]["from_address"],
+            subject: msg[:subject],
+            body: msg[:body],
+            via: :smtp,
+            charset: "UTF-8"
+          )
+        rescue StandardError => e
+          puts e
         end
       end
     end
@@ -279,9 +279,7 @@ module Nora
 
     def availability_schedule
       # Compute Hash of all possible times to set of all user IDs.
-      # rubocop:disable Metrics/LineLength
       all_availabilities = CONFIGURATION["calendar"]["days_of_week"].flat_map do |day|
-        # rubocop:enable Metrics/LineLength
         CONFIGURATION["calendar"]["start_times"].map do |time|
           Chronic.parse("#{@weeks_ahead} weeks from next #{day} #{time}").utc
         end
@@ -301,12 +299,14 @@ module Nora
         ).calendars.each do |id, free_busy|
           free_busy.busy.each do |busy_period|
             all_availabilities.each do |time, ids|
-              if (busy_period.start.to_time <= (
+              unless (busy_period.start.to_time <= (
                 time + CONFIGURATION["calendar"]["duration_in_minutes"] -
                 1.minute
               )) && (busy_period.end.to_time >= (time + 1.minute))
-                ids.delete(id)
+                next
               end
+
+              ids.delete(id)
             end
           end
         end
@@ -315,12 +315,12 @@ module Nora
       # Now remove hash values that have <2 IDs in their set.
       all_availabilities.select { |_, ids| ids.size > 1 }
     end
-    memoize :availability_schedule
+    memo_wise :availability_schedule
 
     def icebreaker
       CONFIGURATION["icebreakers"].sample
     end
-    memoize :icebreaker
+    memo_wise :icebreaker
 
     def email_name(email)
       email_name_map[email]
@@ -331,7 +331,7 @@ module Nora
         h[data["email"]] = data["name"]
       end
     end
-    memoize :email_name_map
+    memo_wise :email_name_map
 
     def calendars
       output = []
@@ -351,25 +351,21 @@ module Nora
       end
       output
     end
-    memoize :calendars
+    memo_wise :calendars
 
     def start_of_week
       Chronic.parse(
-        # rubocop:disable Metrics/LineLength
         "#{@weeks_ahead} weeks from next #{CONFIGURATION['calendar']['days_of_week'].first} "\
         "#{CONFIGURATION['calendar']['start_times'].first}"
-        # rubocop:enable Metrics/LineLength
       )
     end
-    memoize :start_of_week
+    memo_wise :start_of_week
 
     def end_of_week
       date_time = (
         Chronic.parse(
-          # rubocop:disable Metrics/LineLength
           "#{@weeks_ahead} weeks from next #{CONFIGURATION['calendar']['days_of_week'].last} "\
           "#{CONFIGURATION['calendar']['start_times'].last}"
-          # rubocop:enable Metrics/LineLength
         ) + CONFIGURATION["calendar"]["duration_in_minutes"].minutes
       )
 
@@ -379,7 +375,7 @@ module Nora
         date_time + 7.days
       end
     end
-    memoize :end_of_week
+    memo_wise :end_of_week
 
     # Ensure valid credentials, either by restoring from the saved credentials
     # files or intitiating an OAuth2 authorization. If authorization is

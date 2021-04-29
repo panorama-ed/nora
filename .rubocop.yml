@@ -1,6 +1,3 @@
-require:
-  - rubocop/rspec/focused
-
 Layout/DotPosition:
   EnforcedStyle: trailing
 
@@ -13,7 +10,16 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
 Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Style/Documentation:
   Enabled: false
 
 Style/MultilineBlockChain:
