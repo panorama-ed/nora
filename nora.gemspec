@@ -29,6 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", ">= 5", "< 7"
   spec.add_dependency "chronic", "~> 0.10"
   spec.add_dependency "google-api-client", "~> 0.10"
-  spec.add_dependency "memo_wise", "~> 0.4"
+  spec.add_dependency "memo_wise", ">= 0.4", "< 2.0"
   spec.add_dependency "pony", "~> 1.12"
 end
