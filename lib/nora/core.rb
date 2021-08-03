@@ -279,13 +279,14 @@ module Nora
 
     def availability_schedule
       # Compute Hash of all possible times to set of all user IDs.
-      all_availabilities = CONFIGURATION["calendar"]["days_of_week"].flat_map do |day|
-        CONFIGURATION["calendar"]["start_times"].map do |time|
-          Chronic.parse("#{@weeks_ahead} weeks from next #{day} #{time}").utc
+      all_availabilities =
+        CONFIGURATION["calendar"]["days_of_week"].flat_map do |day|
+          CONFIGURATION["calendar"]["start_times"].map do |time|
+            Chronic.parse("#{@weeks_ahead} weeks from next #{day} #{time}").utc
+          end
+        end.each_with_object({}) do |time, h|
+          h[time] = Set.new(calendars.map(&:id))
         end
-      end.each_with_object({}) do |time, h|
-        h[time] = Set.new(calendars.map(&:id))
-      end
 
       # Remove user IDs due to business constraints.
       calendars.each_slice(FREE_BUSY_QUERY_BATCH_SIZE) do |cals|
@@ -355,7 +356,8 @@ module Nora
 
     def start_of_week
       Chronic.parse(
-        "#{@weeks_ahead} weeks from next #{CONFIGURATION['calendar']['days_of_week'].first} "\
+        "#{@weeks_ahead} weeks from next "\
+        "#{CONFIGURATION['calendar']['days_of_week'].first} "\
         "#{CONFIGURATION['calendar']['start_times'].first}"
       )
     end
@@ -364,7 +366,8 @@ module Nora
     def end_of_week
       date_time = (
         Chronic.parse(
-          "#{@weeks_ahead} weeks from next #{CONFIGURATION['calendar']['days_of_week'].last} "\
+          "#{@weeks_ahead} weeks from next "\
+          "#{CONFIGURATION['calendar']['days_of_week'].last} "\
           "#{CONFIGURATION['calendar']['start_times'].last}"
         ) + CONFIGURATION["calendar"]["duration_in_minutes"].minutes
       )
