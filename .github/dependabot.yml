@@ -1,0 +1,34 @@
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "00:00"
+    timezone: America/New_York
+  open-pull-requests-limit: 99
+  labels:
+  - dependencies
+  - Needs QA
+  allow:
+  - dependency-type: direct
+- package-ecosystem: bundler
+  directory: "/.overcommit"
+  schedule:
+    interval: weekly
+    time: "00:00"
+    timezone: America/New_York
+  open-pull-requests-limit: 99
+  allow:
+  # Allow indirect dependencies (via `all`) here, because we'll auto-merge all
+  # of these PRs by using the `development-dependencies` label below in
+  # `.github/workflows/dependabot-prs.yml`. We do not allow indirect dependency
+  # PRs for other types of dependencies because they are noisy and hard to
+  # manually review, and because Dependabot is not currently able to indicate
+  # when an indirect dependency is only used in development
+  # (see: https://github.com/dependabot/fetch-metadata/issues/43).
+  - dependency-type: all
+  labels:
+  - dependencies
+  - Needs QA
+  - development-dependencies
