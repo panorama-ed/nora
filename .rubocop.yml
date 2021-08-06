@@ -1,29 +1,11 @@
-Layout/DotPosition:
-  EnforcedStyle: trailing
-
-Metrics/AbcSize:
-  Enabled: false
+inherit_gem:
+  panolint: rubocop.yml
 
 Metrics/BlockLength:
-  Enabled: false
-
-Metrics/ClassLength:
-  Enabled: false
-
-Metrics/CyclomaticComplexity:
-  Enabled: false
-
-Metrics/MethodLength:
   Enabled: false
 
 Metrics/PerceivedComplexity:
   Enabled: false
 
-Style/Documentation:
+Rails:
   Enabled: false
-
-Style/MultilineBlockChain:
-  Enabled: false
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
