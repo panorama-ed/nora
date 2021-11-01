@@ -21,7 +21,7 @@ GEM
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
     ast (2.4.2)
-    brakeman (5.1.1)
+    brakeman (5.1.2)
     childprocess (4.1.0)
     concurrent-ruby (1.1.9)
     i18n (1.8.10)
