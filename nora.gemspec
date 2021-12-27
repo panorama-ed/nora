@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "overcommit", "~> 0.57"
   spec.add_development_dependency "rubocop", "~> 1.0"
 
-  spec.add_dependency "activesupport", ">= 5", "< 7"
+  spec.add_dependency "activesupport", ">= 5", "< 8"
   spec.add_dependency "chronic", "~> 0.10"
   spec.add_dependency "google-api-client", "~> 0.10"
   spec.add_dependency "memo_wise", ">= 0.4", "< 2.0"
